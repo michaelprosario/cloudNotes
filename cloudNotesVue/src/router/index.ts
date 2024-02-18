@@ -20,7 +20,7 @@ const router = createRouter({
       component: () => import('../views/Playground.vue')
     },
     {
-      path: '/edit-post',
+      path: '/edit-post/:id',
       name: 'editPost',
       component: () => import('../views/EditPost.vue')
     }    
