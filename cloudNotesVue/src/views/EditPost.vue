@@ -31,9 +31,19 @@ import Post from "../core/entities/post";
 
 // setup initial state of component ...
 const route = useRoute();
-const post = ref(new Post());
 
-console.log(route.params.id);
+let recordId = route.params.id;
+
+let post = ref(new Post());
+if(!recordId)
+{
+  alert('id not defined');
+}
+else if(recordId === "new")
+{
+  alert('new record case');
+}
+
 
 
 </script>
