@@ -22,7 +22,7 @@
       <label for="tags" class="form-label">Tags (comma-separated):</label>
       <input type="text" id="tags" class="form-control" v-model="post.tags" />
     </div>
-    <button type="button" class="btn btn-primary">Create Post</button>
+    <button type="button" class="btn btn-primary" @click="onSave()">Save</button>
   </form>
 </template>
 
@@ -30,6 +30,7 @@
 import { ref } from "vue";
 import { useRoute } from "vue-router";
 import Post from "../core/entities/post";
+import { v4 as uuidv4 } from 'uuid';
 
 // setup initial state of component ...
 const route = useRoute();
@@ -41,10 +42,8 @@ if(!recordId)
 {
   alert('id not defined');
 }
-else if(recordId === "new")
+else if(recordId !== "new")
 {
-  alert('new record case');
-}else{
   /*
   - https://github.com/sbkwgh/forum/blob/master/frontend/src/components/AdminCategories.vue
   - how to do a vue on click
@@ -54,10 +53,54 @@ else if(recordId === "new")
 
   */
   post = new Post()
+  post.id = str(uuidv4())
   post.abstract = "abstract goes here."
   post.title = "test title";
   post.content = "content goes here.";
   post.tags = "tag 1, tag 2, tag 3"
+}
+
+function onSave()
+{
+  
+  let url = "/api/store-document";
+
+  let body = {
+    "collection": "notes",
+    "userId": "sys",
+    "name": this.post.title,
+    "tags": this.post.tags,
+    "data": this.post,
+    "id": this.post.id
+  }
+
+const requestOptions = {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: body
+};
+
+fetch(url, requestOptions)
+    .then(async response => {
+        const isJson = response.headers.get('content-type')?.includes('application/json');
+        const data = isJson && await response.json();
+        console.log(data)
+        
+        if (!response.ok) {
+            // get error message from body or default to response status
+            const error = (data && data.message) || response.status;
+            return Promise.reject(error);
+        }
+
+        alert("record saved");
+
+        
+    })
+    .catch(error => {
+        errorMessage.value = error;
+        console.error("There was an error!", error);
+    });
+
 }
 
 
