@@ -1,7 +1,6 @@
 
   export default class Post {
     title: string;
-    slug: string;
     abstract?: string; // Optional excerpt
     content: string;
     tags: string[];
@@ -10,7 +9,6 @@
   
     constructor() {
         this.title = '';
-        this.slug = '';
         this.abstract = '';
         this.content = '';
         this.tags = [];
