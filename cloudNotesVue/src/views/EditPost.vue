@@ -45,6 +45,14 @@ else if(recordId === "new")
 {
   alert('new record case');
 }else{
+  /*
+  - https://github.com/sbkwgh/forum/blob/master/frontend/src/components/AdminCategories.vue
+  - how to do a vue on click
+  - create a class for http operations
+  - how does vue handle dependency injection
+  - implement save new record operation
+
+  */
   post = new Post()
   post.abstract = "abstract goes here."
   post.title = "test title";
