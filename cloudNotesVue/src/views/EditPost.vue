@@ -23,12 +23,15 @@
       <input type="text" id="tags" class="form-control" v-model="post.tags" />
     </div>
     <button type="button" class="btn btn-primary" @click="onSave()">Save</button>
+    &nbsp;
+    <button type="button" class="btn btn-primary" @click="onClose()">Close</button>
+
   </form>
 </template>
 
 <script setup lang="ts">
 import { ref } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import Post from "../core/entities/post";
 import { v4 as uuidv4 } from 'uuid';
 import axios from 'axios';
@@ -51,6 +54,7 @@ function getRecordFromServer(recordId: string, post: Post)
 
 // get url params .......................
 const route = useRoute();
+const router = useRouter();
 let recordId = route.params.id;
 
 // setup new record ......................
@@ -90,6 +94,10 @@ function formIsOkay()
   }
 
   return this.errors.length === 0
+}
+
+function onClose(){
+  this.router.push("/list-posts");
 }
 
 function getFormData(){
