@@ -37,7 +37,10 @@ const route = useRoute();
 
 let recordId = route.params.id;
 
-let post = ref(new Post());
+let newRecord = new Post()
+newRecord.id = uuidv4()
+let post = ref(newRecord);
+
 if(!recordId)
 {
   alert('id not defined');
@@ -53,7 +56,7 @@ else if(recordId !== "new")
 
   */
   post = new Post()
-  post.id = str(uuidv4())
+  post.id = uuidv4()  
   post.abstract = "abstract goes here."
   post.title = "test title";
   post.content = "content goes here.";
@@ -70,15 +73,33 @@ function onSave()
     "userId": "sys",
     "name": this.post.title,
     "tags": this.post.tags,
-    "data": this.post,
+    "data": {...this.post},
     "id": this.post.id
   }
+
+  /*
+  {
+  "collection": "string",
+  "userId": "string",
+  "name": "string",
+  "tags": "",
+  "data": {},
+  "id": "string"
+}
+  */
+
+
+
+
+
 
 const requestOptions = {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: body
+    body: {... body }
 };
+
+console.log(requestOptions);
 
 fetch(url, requestOptions)
     .then(async response => {
