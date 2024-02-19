@@ -1,6 +1,6 @@
 <template>
-  <h3>List of notes</h3>
-  <button type="button" class="btn btn-primary" @click="onNew()">New note</button>
+  <h3>List of Post</h3>
+  <button type="button" class="btn btn-primary" @click="onNew()">New Post</button>
 
   <table>
     <tr>
@@ -9,8 +9,8 @@
     <tr v-for="(record, index) in records"
           :key="index"
           >
-          <td>
-            <a @click="onSelect(record)">{{ record.name }}</a> 
+          <td @click="onSelect(record)">
+            <a href="#">{{ record.name }}</a> 
           </td>
           <td></td>
     </tr>  

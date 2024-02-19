@@ -10,16 +10,6 @@ const router = createRouter({
       component: HomeView
     },
     {
-      path: '/about',
-      name: 'about',
-      component: () => import('../views/AboutView.vue')
-    },
-    {
-      path: '/playground',
-      name: 'playground',
-      component: () => import('../views/Playground.vue')
-    },
-    {
       path: '/edit-post/:id',
       name: 'editPost',
       component: () => import('../views/EditPost.vue')
