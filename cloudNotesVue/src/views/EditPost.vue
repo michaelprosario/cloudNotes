@@ -1,10 +1,5 @@
 <template>
-<!--
-  <div class="mb-3">
-  <label for="exampleFormControlInput1" class="form-label">Email address</label>
-  <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com">
-</div>
---> 
+
   <form>
     <div>
       <label for="title" class="form-label">Title:</label>
@@ -16,7 +11,12 @@
     </div>
     <div>
       <label for="content" class="form-label">Content:</label>
-      <textarea id="content" class="form-control" v-model="post.content" required></textarea>
+      <textarea
+        id="content"
+        class="form-control"
+        v-model="post.content"
+        required
+      ></textarea>
     </div>
     <div>
       <label for="tags" class="form-label">Tags (comma-separated):</label>
@@ -31,6 +31,7 @@ import { ref } from "vue";
 import { useRoute } from "vue-router";
 import Post from "../core/entities/post";
 import { v4 as uuidv4 } from 'uuid';
+import axios from 'axios';
 
 // setup initial state of component ...
 const route = useRoute();
@@ -40,6 +41,7 @@ let recordId = route.params.id;
 let newRecord = new Post()
 newRecord.id = uuidv4()
 let post = ref(newRecord);
+let errors = ref([]);
 
 if(!recordId)
 {
@@ -53,77 +55,69 @@ else if(recordId !== "new")
   - create a class for http operations
   - how does vue handle dependency injection
   - implement save new record operation
-
   */
   post = new Post()
-  post.id = uuidv4()  
+  post.id = uuidv4()
   post.abstract = "abstract goes here."
   post.title = "test title";
   post.content = "content goes here.";
   post.tags = "tag 1, tag 2, tag 3"
 }
 
-function onSave()
+function formIsOkay()
 {
-  
-  let url = "/api/store-document";
 
-  let body = {
-    "collection": "notes",
-    "userId": "sys",
-    "name": this.post.title,
-    "tags": this.post.tags,
-    "data": {...this.post},
-    "id": this.post.id
+  this.errors = []
+  // check title
+  if(this.post.title.length === 0)
+  {
+    this.errors.push("Title is required")
   }
 
-  /*
+  // check content
+  if(this.post.content.length === 0)
   {
-  "collection": "string",
-  "userId": "string",
-  "name": "string",
-  "tags": "",
-  "data": {},
-  "id": "string"
-}
-  */
+    this.errors.push("Content is required")
+  }
 
+  // make sure id is populated
+  if(this.post.id.length === 0)
+  {
+    this.errors.push("Id is required")
+  }
 
-
-
-
-
-const requestOptions = {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: {... body }
-};
-
-console.log(requestOptions);
-
-fetch(url, requestOptions)
-    .then(async response => {
-        const isJson = response.headers.get('content-type')?.includes('application/json');
-        const data = isJson && await response.json();
-        console.log(data)
-        
-        if (!response.ok) {
-            // get error message from body or default to response status
-            const error = (data && data.message) || response.status;
-            return Promise.reject(error);
-        }
-
-        alert("record saved");
-
-        
-    })
-    .catch(error => {
-        errorMessage.value = error;
-        console.error("There was an error!", error);
-    });
-
+  return this.errors.length === 0
 }
 
+async function onSave()
+{
+
+  if(this.formIsOkay())
+  {
+    let url = "/api/store-document";
+
+    let postData = {
+      "collection": "notes",
+      "userId": "sys",
+      "name": this.post.title,
+      "tags": this.post.tags,
+      "data": {...this.post},
+      "id": this.post.id
+    }
+
+    try {
+      const response = await axios.post('/api/store-document', postData);
+      console.log(response)
+    } catch (error) {
+      console.error('Error sending POST request:', error);
+    }
+  }else{
+    alert("Validation errors : " + JSON.stringify(this.errors))
+  }
 
 
+
+
+
+}
 </script>

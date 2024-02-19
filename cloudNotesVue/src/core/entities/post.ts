@@ -3,7 +3,7 @@
     title: string;
     abstract?: string; // Optional excerpt
     content: string;
-    tags: string[];
+    tags: string;
     createdAt: number;
     createdBy: string;
   
@@ -11,9 +11,9 @@
         this.title = '';
         this.abstract = '';
         this.content = '';
-        this.tags = [];
+        this.tags = '';
         this.createdAt = 0;
-        this.createdBy = '';
+        this.createdBy = 'sys';
     }
   }
   
