@@ -26,18 +26,34 @@
   </form>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from "vue";
 import { useRoute } from "vue-router";
 import Post from "../core/entities/post";
 import { v4 as uuidv4 } from 'uuid';
 import axios from 'axios';
 
-// setup initial state of component ...
-const route = useRoute();
 
+function getRecordFromServer(recordId: string, post: Post)
+{
+  let url = "/api/get-document";
+  const postData = {
+    "id": recordId,
+    "userId": "system"
+  }
+  axios.post(url, postData).then(response => {
+    if(response.status === 200)
+      post.value = response.data.record;
+    else
+      alert('Error getting record from server.')
+  })
+}
+
+// get url params .......................
+const route = useRoute();
 let recordId = route.params.id;
 
+// setup new record ......................
 let newRecord = new Post()
 newRecord.id = uuidv4()
 let post = ref(newRecord);
@@ -49,24 +65,11 @@ if(!recordId)
 }
 else if(recordId !== "new")
 {
-  /*
-  - https://github.com/sbkwgh/forum/blob/master/frontend/src/components/AdminCategories.vue
-  - how to do a vue on click
-  - create a class for http operations
-  - how does vue handle dependency injection
-  - implement save new record operation
-  */
-  post = new Post()
-  post.id = uuidv4()
-  post.abstract = "abstract goes here."
-  post.title = "test title";
-  post.content = "content goes here.";
-  post.tags = "tag 1, tag 2, tag 3"
+  getRecordFromServer(recordId, post)
 }
 
 function formIsOkay()
 {
-
   this.errors = []
   // check title
   if(this.post.title.length === 0)
@@ -89,35 +92,39 @@ function formIsOkay()
   return this.errors.length === 0
 }
 
+function getFormData(){
+  let postData = {
+    "collection": "notes",
+    "userId": "sys",
+    "name": this.post.title,
+    "tags": this.post.tags,
+    "data": {...this.post},
+    "id": this.post.id
+  }
+
+  return postData;
+}
+
 async function onSave()
 {
 
   if(this.formIsOkay())
   {
-    let url = "/api/store-document";
-
-    let postData = {
-      "collection": "notes",
-      "userId": "sys",
-      "name": this.post.title,
-      "tags": this.post.tags,
-      "data": {...this.post},
-      "id": this.post.id
-    }
-
+    const postData = this.getFormData();
     try {
-      const response = await axios.post('/api/store-document', postData);
-      console.log(response)
+      let url = "/api/store-document";
+      const response = await axios.post(url, postData);
+      if(response.status === 200){
+        alert('Record saved');
+      }else{
+        alert('Error saving record');
+        console.error(response);
+      }
     } catch (error) {
       console.error('Error sending POST request:', error);
     }
   }else{
     alert("Validation errors : " + JSON.stringify(this.errors))
   }
-
-
-
-
-
 }
 </script>
